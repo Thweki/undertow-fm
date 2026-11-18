@@ -111,6 +111,12 @@ The bundled audio README (`tools/audio/README.md`) states that the soundtrack an
 
 ## Later packaging and compatibility changes
 
-This section will list follow-on packaging, CI, and any strictly necessary compatibility edits made after the original GPT-6.2 Astra snapshot. Gameplay, art, and audio from the snapshot are not being redesigned.
+The items below were added after the original GPT-6.2 Astra snapshot, using official Godot 4.7.2-stable tooling. They are **follow-on packaging and compatibility work**, not the unmodified test output. Gameplay, art, audio, and story from the snapshot were not redesigned. Details: [PACKAGING_NOTES.md](PACKAGING_NOTES.md).
 
-*(To be filled when packaging work lands.)*
+- `export_presets.cfg`: macOS code signing is turned off (no signing certificate is available; the macOS zip is **unsigned** and not notarized). A Web preset writes `release/web/index.html`, uses Godot's single-threaded template, disables the PWA service worker, includes the existing license texts, and excludes `tools/` and `release/`.
+- `tools/package_release.py`: can pack Windows, Linux, and unsigned macOS portable zips on Linux without `ditto`. Windows and Linux zips keep the executable beside its `.pck`, plus `游玩说明.txt` and `licenses/`. Optional `--web` builds a desktop-browser zip with `index.html` at the root. `GODOT` may override the editor path. The rebuilt `UndertowFM-1.0.0-Godot-source.zip` is **source**, not an installer.
+- `tools/pack/游玩说明.txt`: the macOS line now says the build is unsigned and unnotarized, matching what this repository can actually ship.
+- `game/sound.gd`: on Web only, skip adding the Master `AudioEffectHardLimiter`, because Godot 4.7's default browser audio path does not support bus effects. Desktop behavior is unchanged.
+- `.github/workflows/package.yml`: on tag pushes and manual dispatch, a free `ubuntu-24.04` runner downloads official Godot 4.7.2-stable editor and non-Mono templates, checks them against the official `SHA512-SUMS.txt` (the workflow also pins that manifest's SHA-256), and uploads portable zips plus `SHA256SUMS.txt`. No signing secrets.
+
+There is still **no additional license grant** for the game's own code, story, or original assets, and none has been added. Third-party Godot and font licenses in `licenses/` remain bundled. macOS Gatekeeper may block the unsigned app. Web and desktop launches were not treated as a finished playtest in this documentation; treat any GitHub Release as a **preview** until basic launch checks are recorded.

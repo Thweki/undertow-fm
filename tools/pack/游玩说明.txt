@@ -32,5 +32,5 @@
   标题的「声音档案」收录沿途捡到的磁带，可在通关后重播各站。
 
 发行说明
-  macOS 版本为 Apple Silicon / Intel 通用程序，并已作本地签名。
+  macOS 版本为 Apple Silicon / Intel 通用程序，未经签名和公证。
   本发行包含独立游戏程序及随附资源。引擎和字体的许可见 licenses 目录。

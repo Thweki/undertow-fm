@@ -1,0 +1,57 @@
+name: Package Undertow FM
+
+on:
+  push:
+    tags: ['**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Install the official Godot editor and export templates
+        shell: bash
+        working-directory: ${{ runner.temp }}
+        run: |
+          set -euo pipefail
+          tag=4.7.2-stable
+          release_url="https://github.com/godotengine/godot/releases/download/$tag"
+          editor="Godot_v${tag}_linux.x86_64"
+          templates="Godot_v${tag}_export_templates.tpz"
+
+          curl -fsSL --retry 3 -O "$release_url/SHA512-SUMS.txt"
+          # SHA-256 of the manifest published on the 4.7.2-stable release.
+          echo 'b8bdff6704f833e7a021df16ec08e1478edd5a285c1f894929b91a7f74a5c7c0  SHA512-SUMS.txt' | sha256sum --check --strict
+          for archive in "$editor.zip" "$templates"; do
+            curl -fsSL --retry 3 -O "$release_url/$archive"
+            awk -v name="$archive" '$2 == name' SHA512-SUMS.txt | sha512sum --check --strict
+          done
+
+          unzip -q "$editor.zip"
+          chmod +x "$editor"
+          echo "GODOT=$PWD/$editor" >> "$GITHUB_ENV"
+          unzip -q "$templates"
+          template_root="$HOME/.local/share/godot/export_templates"
+          grep -Fx '4.7.2.stable' templates/version.txt
+          mkdir -p "$template_root"
+          mv templates "$template_root/4.7.2.stable"
+
+      - name: Export and package desktop and Web builds
+        run: python3 tools/package_release.py --web
+
+      - name: Upload portable packages, project source and checksums
+        uses: actions/upload-artifact@v7
+        with:
+          name: UndertowFM-packages
+          path: |
+            release/UndertowFM-*.zip
+            release/SHA256SUMS.txt
+          if-no-files-found: error
+          compression-level: 0

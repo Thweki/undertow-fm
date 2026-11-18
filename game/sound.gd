@@ -14,7 +14,8 @@ func setup(p):
 	var limited=false
 	for i in AudioServer.get_bus_effect_count(master):
 		if AudioServer.get_bus_effect(master,i) is AudioEffectHardLimiter: limited=true
-	if not limited:
+	# Web sample playback skips bus effects.
+	if not limited and not OS.has_feature("web"):
 		var limiter=AudioEffectHardLimiter.new()
 		limiter.ceiling_db=-1.2
 		AudioServer.add_bus_effect(master,limiter)
