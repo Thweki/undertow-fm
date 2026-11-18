@@ -84,7 +84,31 @@ Look at [GitHub Releases](https://github.com/Thweki/undertow-fm/releases) for an
 
 The original snapshot had no Web / HTML5 preset. A browser build is plausible: the game is GDScript-only, already uses the Compatibility renderer required for Godot 4 web (WebGL 2.0), and is a 2D 640×360 project. Official Godot 4.7 documentation states that Forward+ and Mobile cannot be used for the stock web export, and that C# projects cannot be exported to the web in Godot 4.
 
-A web port is follow-on work. Intended public path (once deployed): `https://page.thweki.com:8443/undertow-fm/` — an independent subpath of the existing site, not the site root. Desktop browsers are the first target; no touch UI was found. See the later-changes section if a web preset or compatibility patches were added after the snapshot.
+A web port is follow-on work. The desktop-browser build is published at `https://page.thweki.com:8443/undertow-fm/` — an independent subpath of the existing site, not the site root. The site is served on port 8443. Desktop browsers are the first target; no touch UI was found. See the later-changes section if a web preset or compatibility patches were added after the snapshot.
+
+### Browser playtest (preview, not a full playthrough)
+
+A desktop-browser check was run against a local HTTP preview of the Web zip (`http://127.0.0.1:8871/`, not `file://`). This record is only what that session showed. It is **not** a complete playthrough, and it is **not** a confirmed bug root-cause analysis. Gameplay code was not changed afterwards in order to ship.
+
+What worked in that session:
+
+- The title screen loaded (逆潮电台 / UNDERTOW FM).
+- The workshop (修理铺) could be entered.
+- Arrow-key movement was clearly visible.
+- After a refresh, the title screen offered 继续接力 / 修理铺.
+
+What was not completed:
+
+- The on-screen tutorial stayed at 校频 1/6. Approaching the cyan marker did not advance the step.
+- Pressing J to punch was not confirmed.
+- Audio was not tested.
+- The browser console showed no errors during this check.
+
+Do not describe this Web build as fully playtested. Screenshots from the session:
+
+- [Title screen](docs/browser-review/title.png)
+- [Movement in the workshop, tutorial still at 1/6](docs/browser-review/gameplay-movement.png)
+- [Continue / workshop after refresh](docs/browser-review/after-refresh-continue.png)
 
 ---
 
@@ -119,4 +143,4 @@ The items below were added after the original GPT-6.2 Astra snapshot, using offi
 - `game/sound.gd`: on Web only, skip adding the Master `AudioEffectHardLimiter`, because Godot 4.7's default browser audio path does not support bus effects. Desktop behavior is unchanged.
 - `.github/workflows/package.yml`: on tag pushes and manual dispatch, a free `ubuntu-24.04` runner downloads official Godot 4.7.2-stable editor and non-Mono templates, checks them against the official `SHA512-SUMS.txt` (the workflow also pins that manifest's SHA-256), and uploads portable zips plus `SHA256SUMS.txt`. No signing secrets.
 
-There is still **no additional license grant** for the game's own code, story, or original assets, and none has been added. Third-party Godot and font licenses in `licenses/` remain bundled. macOS Gatekeeper may block the unsigned app. Web and desktop launches were not treated as a finished playtest in this documentation; treat any GitHub Release as a **preview** until basic launch checks are recorded.
+There is still **no additional license grant** for the game's own code, story, or original assets, and none has been added. Third-party Godot and font licenses in `licenses/` remain bundled. macOS Gatekeeper may block the unsigned app. A Linux portable binary stayed up for an 8-second Xvfb smoke start (it was killed by timeout; that is not a playthrough). Windows and macOS launches have not been verified here. The browser check above recorded title, workshop entry, arrow-key movement, and continue-after-refresh; the tutorial did not advance past 1/6, J-to-punch was not confirmed, and audio was not tested. Treat any GitHub Release as a **preview**, not a claim that gameplay fully passed.
